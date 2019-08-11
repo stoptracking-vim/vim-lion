@@ -16,11 +16,25 @@ function! s:command(func, ...)
 endfunction
 
 function! s:alignRight(type, ...)
-	return s:align('right', a:type, a:0, '')
+	call s:align('right', a:type, a:0, '')
 endfunction
 
 function! s:alignLeft(type, ...)
-	return s:align('left', a:type, a:0, '')
+	call s:align('left', a:type, a:0, '')
+endfunction
+
+function! s:alignSqueezeRight(type, ...)
+	let squeeze = get(b:, 'lion_squeeze_spaces', 0) || get(g:, 'lion_squeeze_spaces', 0)
+	let b:lion_squeeze_spaces = !squeeze
+	call s:align('right', a:type, a:0, '')
+	let b:lion_squeeze_spaces = squeeze
+endfunction
+
+function! s:alignSqueezeLeft(type, ...)
+	let squeeze = get(b:, 'lion_squeeze_spaces', 0) || get(g:, 'lion_squeeze_spaces', 0)
+	let b:lion_squeeze_spaces = !squeeze
+	call s:align('left', a:type, a:0, '')
+	let b:lion_squeeze_spaces = squeeze
 endfunction
 
 " Align a range to a particular character
@@ -199,13 +213,19 @@ function! s:assign_map(map, func)
 	execute 'vmap <silent> ' . a:map . ' <Plug>VLion' . a:func
 endfunction
 
-nnoremap <silent> <Plug>LionRepeat .
+nnoremap <silent>        <Plug>LionRepeat .
 nnoremap <silent> <expr> <Plug>LionRight <SID>command("<SID>alignRight")
 vnoremap <silent> <expr> <Plug>VLionRight <SID>command("<SID>alignRight", 1)
 nnoremap <silent> <expr> <Plug>LionLeft <SID>command("<SID>alignLeft")
 vnoremap <silent> <expr> <Plug>VLionLeft <SID>command("<SID>alignLeft", 1)
+nnoremap <silent> <expr> <Plug>LionSqueezeRight <SID>command("<SID>alignSqueezeRight")
+vnoremap <silent> <expr> <Plug>VLionSqueezeRight <SID>command("<SID>alignSqueezeRight", 1)
+nnoremap <silent> <expr> <Plug>LionSqueezeLeft <SID>command("<SID>alignSqueezeLeft")
+vnoremap <silent> <expr> <Plug>VLionSqueezeLeft <SID>command("<SID>alignSqueezeLeft", 1)
 
 if get(g:, 'lion_create_maps', 1)
-	call s:assign_map(get(g:, 'lion_map_right', 'gl'), 'Right')
-	call s:assign_map(get(g:, 'lion_map_left',  'gL'), 'Left')
+	call s:assign_map(get(g:, 'lion_map_right', 'g['), 'Right')
+	call s:assign_map(get(g:, 'lion_map_left',  'g]'), 'Left')
+	call s:assign_map(get(g:, 'lion_map_right', 'g{'), 'SqueezeRight')
+	call s:assign_map(get(g:, 'lion_map_left',  'g}'), 'SqueezeLeft')
 endif
