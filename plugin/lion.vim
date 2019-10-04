@@ -224,8 +224,8 @@ nnoremap <silent> <expr> <Plug>LionSqueezeLeft <SID>command("<SID>alignSqueezeLe
 vnoremap <silent> <expr> <Plug>VLionSqueezeLeft <SID>command("<SID>alignSqueezeLeft", 1)
 
 if get(g:, 'lion_create_maps', 1)
-	call s:assign_map(get(g:, 'lion_map_right', 'g['), 'Right')
-	call s:assign_map(get(g:, 'lion_map_left',  'g]'), 'Left')
-	call s:assign_map(get(g:, 'lion_map_right', 'g{'), 'SqueezeRight')
-	call s:assign_map(get(g:, 'lion_map_left',  'g}'), 'SqueezeLeft')
+	call s:assign_map(get(g:, 'lion_map_right',     'g['), 'Right')
+	call s:assign_map(get(g:, 'lion_map_left',      'g]'), 'Left')
+	call s:assign_map(get(g:, 'lion_map_right_sqz', 'g{'), 'SqueezeRight')
+	call s:assign_map(get(g:, 'lion_map_left_sqz',  'g}'), 'SqueezeLeft')
 endif
