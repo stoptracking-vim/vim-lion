@@ -16,29 +16,23 @@ function! s:command(func, ...)
 endfunction
 
 function! s:alignRight(type, ...)
-	call s:align('right', a:type, a:0, '')
+	call s:align('right', a:type, a:0, '', 0)
 endfunction
 
 function! s:alignLeft(type, ...)
-	call s:align('left', a:type, a:0, '')
+	call s:align('left', a:type, a:0, '', 0)
 endfunction
 
 function! s:alignSqueezeRight(type, ...)
-	let squeeze = get(b:, 'lion_squeeze_spaces', 0) || get(g:, 'lion_squeeze_spaces', 0)
-	let b:lion_squeeze_spaces = !squeeze
-	call s:align('right', a:type, a:0, '')
-	let b:lion_squeeze_spaces = squeeze
+	call s:align('right', a:type, a:0, '', 1)
 endfunction
 
 function! s:alignSqueezeLeft(type, ...)
-	let squeeze = get(b:, 'lion_squeeze_spaces', 0) || get(g:, 'lion_squeeze_spaces', 0)
-	let b:lion_squeeze_spaces = !squeeze
-	call s:align('left', a:type, a:0, '')
-	let b:lion_squeeze_spaces = squeeze
+	call s:align('left', a:type, a:0, '', 1)
 endfunction
 
 " Align a range to a particular character
-function! s:align(mode, type, vis, align_char)
+function! s:align(mode, type, vis, align_char, squeeze)
 	let sel_save = &selection
 	let &selection = 'inclusive'
 
@@ -76,17 +70,8 @@ function! s:align(mode, type, vis, align_char)
 		endif
 		let [start_line, end_line, start_col, end_col, middle_start_col, middle_end_col] = pos
 
-		" Check for 'lion_squeeze_spaces' options
-		if exists('b:lion_squeeze_spaces')
-			let s:lion_squeeze_spaces = get(b:, 'lion_squeeze_spaces')
-		elseif exists('g:lion_squeeze_spaces')
-			let s:lion_squeeze_spaces = get(g:, 'lion_squeeze_spaces')
-		else
-			let s:lion_squeeze_spaces = 0
-		endif
-
 		" Squeeze extra spaces before aligning
-		if s:lion_squeeze_spaces
+		if a:squeeze || get(b:, 'lion_squeeze_spaces', 0)
 			for lnum in range(start_line, end_line)
 				let pre = visualmode() ==# "\<C-v>" ? '\%>'.pos[5].'c' : ''
 				call setline(lnum, substitute(getline(lnum), pre.'\(^\s*\)\@<! \{2,}', ' ', 'g'))
