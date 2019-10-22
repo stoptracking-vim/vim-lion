@@ -88,7 +88,8 @@ function! s:align(mode, type, vis, align_char)
 		" Squeeze extra spaces before aligning
 		if s:lion_squeeze_spaces
 			for lnum in range(start_line, end_line)
-				call setline(lnum, substitute(getline(lnum), '\(^\s*\)\@<! \{2,}', ' ', 'g'))
+				let pre = visualmode() ==# "\<C-v>" ? '\%>'.pos[5].'c' : ''
+				call setline(lnum, substitute(getline(lnum), pre.'\(^\s*\)\@<! \{2,}', ' ', 'g'))
 			endfor
 		endif
 
