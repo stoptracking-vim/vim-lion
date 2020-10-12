@@ -196,18 +196,18 @@ function! s:assign_map(map, func)
 		return
 	endif
 	execute 'nmap <silent> ' . a:map . ' <Plug>Lion' . a:func
-	execute 'vmap <silent> ' . a:map . ' <Plug>VLion' . a:func
+	execute 'xmap <silent> ' . a:map . ' <Plug>VLion' . a:func
 endfunction
 
 nnoremap <silent>        <Plug>LionRepeat .
-nnoremap <silent> <expr> <Plug>LionRight <SID>command("<SID>alignRight")
-vnoremap <silent> <expr> <Plug>VLionRight <SID>command("<SID>alignRight", 1)
-nnoremap <silent> <expr> <Plug>LionLeft <SID>command("<SID>alignLeft")
-vnoremap <silent> <expr> <Plug>VLionLeft <SID>command("<SID>alignLeft", 1)
-nnoremap <silent> <expr> <Plug>LionSqueezeRight <SID>command("<SID>alignSqueezeRight")
-vnoremap <silent> <expr> <Plug>VLionSqueezeRight <SID>command("<SID>alignSqueezeRight", 1)
-nnoremap <silent> <expr> <Plug>LionSqueezeLeft <SID>command("<SID>alignSqueezeLeft")
-vnoremap <silent> <expr> <Plug>VLionSqueezeLeft <SID>command("<SID>alignSqueezeLeft", 1)
+nnoremap <silent> <expr> <Plug>LionRight         <SID>command("<SID>alignRight")
+xnoremap <silent> <expr> <Plug>VLionRight        <SID>command("<SID>alignRight", 1)
+nnoremap <silent> <expr> <Plug>LionLeft          <SID>command("<SID>alignLeft")
+xnoremap <silent> <expr> <Plug>VLionLeft         <SID>command("<SID>alignLeft", 1)
+nnoremap <silent> <expr> <Plug>LionSqueezeRight  <SID>command("<SID>alignSqueezeRight")
+xnoremap <silent> <expr> <Plug>VLionSqueezeRight <SID>command("<SID>alignSqueezeRight", 1)
+nnoremap <silent> <expr> <Plug>LionSqueezeLeft   <SID>command("<SID>alignSqueezeLeft")
+xnoremap <silent> <expr> <Plug>VLionSqueezeLeft  <SID>command("<SID>alignSqueezeLeft", 1)
 
 if get(g:, 'lion_create_maps', 1)
 	call s:assign_map(get(g:, 'lion_map_right',     'g['), 'Right')
