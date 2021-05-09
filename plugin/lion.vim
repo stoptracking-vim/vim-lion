@@ -16,15 +16,23 @@ function! s:command(func, ...)
 endfunction
 
 function! s:alignRight(type, ...)
-	return s:align('right', a:type, a:0, '')
+	call s:align('right', a:type, a:0, '', 0)
 endfunction
 
 function! s:alignLeft(type, ...)
-	return s:align('left', a:type, a:0, '')
+	call s:align('left', a:type, a:0, '', 0)
+endfunction
+
+function! s:alignSqueezeRight(type, ...)
+	call s:align('right', a:type, a:0, '', 1)
+endfunction
+
+function! s:alignSqueezeLeft(type, ...)
+	call s:align('left', a:type, a:0, '', 1)
 endfunction
 
 " Align a range to a particular character
-function! s:align(mode, type, vis, align_char)
+function! s:align(mode, type, vis, align_char, squeeze)
 	let sel_save = &selection
 	let &selection = 'inclusive'
 
@@ -62,19 +70,11 @@ function! s:align(mode, type, vis, align_char)
 		endif
 		let [start_line, end_line, start_col, end_col, middle_start_col, middle_end_col] = pos
 
-		" Check for 'lion_squeeze_spaces' options
-		if exists('b:lion_squeeze_spaces')
-			let s:lion_squeeze_spaces = get(b:, 'lion_squeeze_spaces')
-		elseif exists('g:lion_squeeze_spaces')
-			let s:lion_squeeze_spaces = get(g:, 'lion_squeeze_spaces')
-		else
-			let s:lion_squeeze_spaces = 0
-		endif
-
 		" Squeeze extra spaces before aligning
-		if s:lion_squeeze_spaces
+		if a:squeeze || get(b:, 'lion_squeeze_spaces', 0)
 			for lnum in range(start_line, end_line)
-				call setline(lnum, substitute(getline(lnum), '\(^\s*\)\@<! \{2,}', ' ', 'g'))
+				let pre = visualmode() ==# "\<C-v>" ? '\%>'.pos[5].'c' : ''
+				call setline(lnum, substitute(getline(lnum), pre.'\(^\s*\)\@<! \{2,}', ' ', 'g'))
 			endfor
 		endif
 
@@ -196,16 +196,22 @@ function! s:assign_map(map, func)
 		return
 	endif
 	execute 'nmap <silent> ' . a:map . ' <Plug>Lion' . a:func
-	execute 'vmap <silent> ' . a:map . ' <Plug>VLion' . a:func
+	execute 'xmap <silent> ' . a:map . ' <Plug>VLion' . a:func
 endfunction
 
-nnoremap <silent> <Plug>LionRepeat .
-nnoremap <silent> <expr> <Plug>LionRight <SID>command("<SID>alignRight")
-vnoremap <silent> <expr> <Plug>VLionRight <SID>command("<SID>alignRight", 1)
-nnoremap <silent> <expr> <Plug>LionLeft <SID>command("<SID>alignLeft")
-vnoremap <silent> <expr> <Plug>VLionLeft <SID>command("<SID>alignLeft", 1)
+nnoremap <silent>        <Plug>LionRepeat .
+nnoremap <silent> <expr> <Plug>LionRight         <SID>command("<SID>alignRight")
+xnoremap <silent> <expr> <Plug>VLionRight        <SID>command("<SID>alignRight", 1)
+nnoremap <silent> <expr> <Plug>LionLeft          <SID>command("<SID>alignLeft")
+xnoremap <silent> <expr> <Plug>VLionLeft         <SID>command("<SID>alignLeft", 1)
+nnoremap <silent> <expr> <Plug>LionSqueezeRight  <SID>command("<SID>alignSqueezeRight")
+xnoremap <silent> <expr> <Plug>VLionSqueezeRight <SID>command("<SID>alignSqueezeRight", 1)
+nnoremap <silent> <expr> <Plug>LionSqueezeLeft   <SID>command("<SID>alignSqueezeLeft")
+xnoremap <silent> <expr> <Plug>VLionSqueezeLeft  <SID>command("<SID>alignSqueezeLeft", 1)
 
 if get(g:, 'lion_create_maps', 1)
-	call s:assign_map(get(g:, 'lion_map_right', 'gl'), 'Right')
-	call s:assign_map(get(g:, 'lion_map_left',  'gL'), 'Left')
+	call s:assign_map(get(g:, 'lion_map_right',     'g['), 'Right')
+	call s:assign_map(get(g:, 'lion_map_left',      'g]'), 'Left')
+	call s:assign_map(get(g:, 'lion_map_right_sqz', 'g{'), 'SqueezeRight')
+	call s:assign_map(get(g:, 'lion_map_left_sqz',  'g}'), 'SqueezeLeft')
 endif
